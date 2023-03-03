@@ -1,0 +1,4272 @@
+openapi: 3.0.0
+info:
+  version: 3.0.0
+  title: IDS NXT REST interface
+  description: "This documentation describes the REST interface (REST = Representational\
+    \ State Transfer) for IDS NXT cameras. The REST interface allows you to send requests\
+    \ or commands such as GET or PUT etc. via HTTP commands or to access data.\n\n\
+    \ - The REST interface uses **HTTP/1.1**, other HTTP versions are not supported.\n\
+    \ - User authentification is carried out using HTTP Basic.\n - There are three\
+    \ different user classes for IDS NXT cameras with different permissions: user,\
+    \ service, and admin.\n\nYou can use the link above to download the OpenAPI description\
+    \ file of the IDS NXT REST interface.\n"
+  contact:
+    name: IDS Imaging Development Systems GmbH
+    url: https://en.ids-imaging.com
+    email: info@ids-imaging.com
+tags:
+- name: Camera
+  description: Camera settings like exposure time, trigger, ROI, etc.
+- name: Dashboard
+  description: Camera dashboard with camera status etc.
+- name: Device info
+  description: Information on the camera like model name, serial number, etc.
+- name: Events
+  description: Information on camera events
+- name: GPIO
+  description: General purpose I/O settings
+- name: Light
+  description: Flash settings
+- name: Network
+  description: Network settings like IPv4, SSL, FTP client etc.
+- name: REST interface
+  description: Documentation of the IDS NXT REST interface
+- name: RS-232
+  description: RS-232 settings
+- name: Signals
+  description: Camera or vision app signals
+- name: States
+  description: Camera states
+- name: Statistics
+  description: Statistical data of the camera
+- name: Support
+  description: Support file creation
+- name: System
+  description: Backup and reboot options
+- name: Users
+  description: User and password settings
+- name: Vision apps
+  description: Vision app settings (depending on selected vision app)
+security:
+- basicAuth:
+  - auth
+paths:
+  /:
+    get:
+      x-permission: guest
+      tags:
+      - Dashboard
+      summary: Returns the camera website.
+      description: 'Returns the camera website with dashboard.
+
+
+        The camera website can be opened via http(s)://\<camera IP address\>.
+
+        '
+      responses:
+        '200':
+          description: Camera website.
+          content:
+            text/html:
+              schema:
+                type: string
+  /camera:
+    options:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Lists all options of the node.
+      description: Lists all options of the /camera node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Returns the camera settings.
+      description: Returns the camera settings like exposure time, binning, gain etc.
+      responses:
+        '200':
+          description: Current camera settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Camera'
+    patch:
+      x-permission: service
+      tags:
+      - Camera
+      summary: Changes the camera settings.
+      description: Changes the camera settings.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Camera'
+      responses:
+        '200':
+          description: New camera settings have been applied.
+  /camera/color:
+    options:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Lists all options of the node (color sensors only).
+      description: Lists all options of the /camera/color node. This node is only
+        available on color sensors.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Returns the color setting (color sensors only).
+      description: Returns the color setting for gain and white balance. The resolution
+        is two decimal places. This node is only available on color sensors.
+      responses:
+        '200':
+          description: Current color settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Color'
+    patch:
+      x-permission: service
+      tags:
+      - Camera
+      summary: Sets the color settings (color sensors only).
+      description: Sets the color settings for gain and white balance. The resolution
+        is two decimal places. This node is only available on color sensors.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Color'
+      responses:
+        '200':
+          description: New color settings have been applied.
+  /camera/color/colorcorrection:
+    options:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Lists all options of the node (color sensors only).
+      description: Lists all options of the /camera/color/colorcorrection node. This
+        node is only available on color sensors.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Returns the color correction settings (color sensors only).
+      description: Returns the color correction settings. This node is only available
+        on color sensors.
+      responses:
+        '200':
+          description: Current color correction settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColorCorrection'
+    patch:
+      x-permission: service
+      tags:
+      - Camera
+      summary: Sets the color correction (color sensors only).
+      description: Sets the color correction settings. This node is only available
+        on color sensors.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColorCorrection'
+      responses:
+        '200':
+          description: New color correction settings have been applied.
+  /camera/color/colorcorrection/matrix:
+    options:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Lists all options of the node. (color sensors only).
+      description: Lists all options of the /camera/color/colorcorrection/matrix node.
+        This node is only available on color sensors.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Returns the color correction matrix (color sensors only).
+      description: Returns the color correction matrix. This node is only available
+        on color sensors.
+      responses:
+        '200':
+          description: Current color correction matrix.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColorCorrectionMatrix'
+    patch:
+      x-permission: service
+      tags:
+      - Camera
+      summary: Sets the color correction matrix (color sensors only).
+      description: 'Sets the color correction matrix. This node is only available
+        on color sensors.
+
+
+        The values can only be patched if the "ColorCorrectionMatrixType" parameter
+        under "/camera/color/colorcorrection" is set to "Custom0". The default "HQ"
+        matrix cannot be changed.
+
+        '
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ColorCorrectionMatrix'
+      responses:
+        '200':
+          description: New color correction matrix has been applied.
+  /camera/image:
+    options:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Lists all options of the node.
+      description: Lists all options of the /camera/image node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Returns the latest image.
+      description: "Returns the latest acquired image. Returns 503 (service unavailable)\
+        \ if no image acquired so far.\n\n - If no MIME type or image/* is specified,\
+        \ image/jpeg is returned.\n - If no image has been collected yet, \"503 -\
+        \ Service unavailable\" is returned.\n"
+      parameters:
+      - $ref: '#/components/parameters/qualityParam'
+      - $ref: '#/components/parameters/maxWidthParam'
+      - $ref: '#/components/parameters/maxHeightParam'
+      responses:
+        '200':
+          description: Latest acquired image.
+          content:
+            image/jpeg:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/png:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/bmp:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '503':
+          description: Is returned if no image is acquired so far.
+  /camera/image/testimage:
+    options:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Lists all options of the node.
+      description: Lists all options of the /camera/image/testimage node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Returns the test image settings.
+      description: Returns the test image settings.
+      responses:
+        '200':
+          description: Current test image settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Testpattern'
+    patch:
+      x-permission: service
+      tags:
+      - Camera
+      summary: Sets test images and patterns.
+      description: "Sets test patterns. These settings are not stored permanently.\n\
+        \n - The test pattern is deactivated when the camera is rebooted.\n - If a\
+        \ sensor ROI is set (change of image height or image width) the test pattern\
+        \ will be scaled accordingly.\n - Functions such as gamma or binning do not\
+        \ have any effect on the test pattern.\n"
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Testpattern'
+      responses:
+        '200':
+          description: New test image has been set.
+  /camera/image/testimage/custom:
+    options:
+      x-permission: admin
+      tags:
+      - Camera
+      summary: Lists all options of the node.
+      description: Lists all options of the /camera/image/testimage/custom node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: admin
+      tags:
+      - Camera
+      summary: Returns the information about the custom test image mode.
+      description: Returns the information about the custom test image mode.
+      responses:
+        '200':
+          description: Information about the custom test image mode.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestImage'
+    delete:
+      x-permission: admin
+      tags:
+      - Camera
+      summary: Deletes and disables the custom test image.
+      description: Deletes and disables the custom test image.
+      responses:
+        '200':
+          description: Custom test image has been deleted and disabled.
+    put:
+      x-permission: admin
+      tags:
+      - Camera
+      summary: Uploads and enables a custom test image.
+      description: "Uploads and enables a custom test image.\n\n - The maximum size\
+        \ of the test image is 25 MB. Allowed image formats are JPEG, PNG and BMP.\n\
+        \ - After uploading, the test image is activated automatically. Image acquisition\
+        \ continues in the background.\n - The test image is deleted when the camera\
+        \ is restarted.\n - If a sensor ROI is set (change of image height or image\
+        \ width) the test image will be scaled accordingly.\n - Functions such as\
+        \ gamma or binning do not have any effect on the test image.\n - Uploading\
+        \ a test image again overwrites an existing test image.\n - The test image\
+        \ is not included in a camera backup.\n"
+      requestBody:
+        content:
+          image/jpeg:
+            schema:
+              $ref: '#/components/schemas/Image'
+          image/png:
+            schema:
+              $ref: '#/components/schemas/Image'
+          image/bmp:
+            schema:
+              $ref: '#/components/schemas/Image'
+      responses:
+        '200':
+          description: Custom test image has been uploaded and enabled.
+  /camera/roi:
+    options:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Lists all options of the node.
+      description: Lists all options of the /camera/roi node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Returns the ROI (region of interest) settings.
+      description: Returns the ROI (region of interest) settings like width, height,
+        and offset.
+      responses:
+        '200':
+          description: Current ROI settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ROI'
+    patch:
+      x-permission: service
+      tags:
+      - Camera
+      summary: Sets the ROI (region of interest).
+      description: Sets the ROI (region of interest).
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ROI'
+      responses:
+        '200':
+          description: ROI has been set.
+  /camera/trigger:
+    options:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Lists all options of the node.
+      description: Lists all options of the /camera/trigger node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Camera
+      summary: Returns the trigger settings.
+      description: Returns the trigger settings like delay, timeout etc.
+      responses:
+        '200':
+          description: Current trigger settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trigger'
+    patch:
+      x-permission: service
+      tags:
+      - Camera
+      summary: Changes the trigger setting.
+      description: Changes the trigger settings.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Trigger'
+      responses:
+        '200':
+          description: New trigger settings have been applied.
+    post:
+      x-permission: service
+      tags:
+      - Camera
+      summary: Generates a software trigger.
+      description: Generates a software trigger. Trigger mode must be set to software,
+        otherwise this command will not have any effects.
+      responses:
+        '200':
+          description: Software trigger has been generated.
+  /deviceinfo:
+    options:
+      x-permission: guest
+      tags:
+      - Device info
+      summary: Lists all options of the node.
+      description: Lists all options of the /deviceinfo node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: guest
+      tags:
+      - Device info
+      summary: Returns the device information.
+      description: Returns the device information like device model, device type,
+        device name, etc.
+      responses:
+        '200':
+          description: Current device information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deviceinfo'
+    patch:
+      x-permission: service
+      tags:
+      - Device info
+      summary: Changes the device information.
+      description: Changes the device information like datetime, device name, or location.
+        Strings have to be percent encoded.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DeviceinfoSetter'
+      responses:
+        '200':
+          description: New device information has been applied.
+  /deviceinfo/avatar:
+    options:
+      x-permission: guest
+      tags:
+      - Device info
+      summary: Lists all options of the node.
+      description: Lists all options of the /deviceinfo/avatar node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: guest
+      tags:
+      - Device info
+      summary: Returns the avatar image file.
+      description: Returns the avatar image file.
+      responses:
+        '200':
+          description: Current avatar image file.
+          content:
+            image/png:
+              schema:
+                $ref: '#/components/schemas/Image'
+    put:
+      x-permission: service
+      tags:
+      - Device info
+      summary: Uploads a new avatar image file.
+      description: Uploads a new avatar image file, implicitly deleting the previous
+        file.
+      requestBody:
+        content:
+          image/jpeg:
+            schema:
+              $ref: '#/components/schemas/Image'
+          image/png:
+            schema:
+              $ref: '#/components/schemas/Image'
+          image/bmp:
+            schema:
+              $ref: '#/components/schemas/Image'
+          image/gif:
+            schema:
+              $ref: '#/components/schemas/Image'
+      responses:
+        '200':
+          description: New avatar image file has been uploaded.
+    delete:
+      x-permission: service
+      tags:
+      - Device info
+      summary: Deletes the avatar image file.
+      description: Deletes the avatar image file. A fallback avatar image file will
+        be used for next access.
+      responses:
+        '200':
+          description: The avatar image file has been deleted.
+  /deviceinfo/datetime:
+    options:
+      x-permission: guest
+      tags:
+      - Device info
+      summary: Lists all options of the node.
+      description: Lists all options of the /deviceinfo/datetime node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: guest
+      tags:
+      - Device info
+      summary: Returns the datetime information.
+      description: Returns the datetime information of the device.
+      responses:
+        '200':
+          description: Current datetime information of the device.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Time'
+    patch:
+      x-permission: service
+      tags:
+      - Device info
+      summary: Updates the datetime information.
+      description: "Update datetime information of the device.\nThere are two possibilities\
+        \ for time synchronization via NTP. In bothe cases, the \"NTP\" node under\
+        \ /deviceinfo/datetime must be set to \"true\".\n\n 1. /deviceinfo/datetime\
+        \ -\\> node \"NTPServer\"\n 2. /network/timeserver -\\> node \"Timeserver\"\
+        \n\nA valid configuration of \"Timeserver\" is priorized hight than the server\
+        \ set under /deviceinfo/datetime\n"
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Time'
+      responses:
+        '200':
+          description: Datetime information of the device has been updated.
+  /events:
+    get:
+      x-permission: user
+      tags:
+      - Events
+      summary: Returns the camera events.
+      description: Returns the camera events.
+      responses:
+        '200':
+          description: Camera events.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+  /gpio:
+    options:
+      x-permission: guest
+      tags:
+      - GPIO
+      summary: Lists all options of the node.
+      description: Lists all options of the /gpio node.
+      responses:
+        '200':
+          description: Default options response as a list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StringList'
+  /gpio/inputs:
+    options:
+      x-permission: guest
+      tags:
+      - GPIO
+      summary: Lists all options of the node.
+      description: Lists all options of the /gpio/inputs node.
+      responses:
+        '200':
+          $ref: '#/paths/~1gpio/options/responses/200'
+  /gpio/inputs/{pin}:
+    parameters:
+    - name: pin
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - GPIO
+      summary: Lists all options of the node.
+      description: Lists all options of the /gpio/input/{pin} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - GPIO
+      summary: Returns the status information of the selected input.
+      description: Returns the status information of the selected input like level
+        or inverter.
+      responses:
+        '200':
+          description: Current status information of the selected input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gpio'
+    patch:
+      x-permission: service
+      tags:
+      - GPIO
+      summary: Changes the input settings.
+      description: 'Changes the input settings.
+
+
+        Only difference to /gpio/outputs/<pin>: level cannot be set using PATCH.
+
+        '
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GpioInputSetter'
+      responses:
+        '200':
+          description: New input settings have been applied.
+  /gpio/outputs:
+    options:
+      x-permission: guest
+      tags:
+      - GPIO
+      summary: Lists all options of the node.
+      description: Lists all options of the /gpio/outputs node.
+      responses:
+        '200':
+          $ref: '#/paths/~1gpio/options/responses/200'
+  /gpio/outputs/{pin}:
+    parameters:
+    - name: pin
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - GPIO
+      summary: Lists all options of the node.
+      description: Lists all options of the /gpio/outputs/{pin} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - GPIO
+      summary: Returns the status information of the selected output.
+      description: 'Returns the status information of the selected output.
+
+
+        With the GET command, you receive the physical value for the selected output.
+        The PATCH command sets the logical value.
+
+        '
+      responses:
+        '200':
+          description: Current status information of the selected output.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gpio'
+    patch:
+      x-permission: service
+      tags:
+      - GPIO
+      summary: Changes the output settings.
+      description: 'Changes the output settings.
+
+
+        With the GET command, you receive the physical value for the selected output.
+        The PATCH command sets the logical value.
+
+        '
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GpioOutputSetter'
+      responses:
+        '200':
+          description: New output settings have been applied.
+  /light:
+    options:
+      x-permission: guest
+      tags:
+      - Light
+      summary: Lists all options of the node.
+      description: List all options of the /light node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+  /light/external:
+    options:
+      x-permission: user
+      tags:
+      - Light
+      summary: Lists all options of the node.
+      description: Lists all options of the /light/external node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Light
+      summary: Returns the flash settings.
+      description: Returns the flash settings.
+      responses:
+        '200':
+          description: Current flash settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LightExternal'
+    patch:
+      x-permission: service
+      tags:
+      - Light
+      summary: Changes the flash settings.
+      description: "Changes the flash settings.\n\nThe followings modes are useful\
+        \ for external flash.\n\n**Flash off**\n - Duration = 0\n\n**Flash on during\
+        \ exposure (high active)**\n - Duration = Exposure time (or shorter if required)\n\
+        \ - If necessary, set a delay\n - Inverted = false\n\n**Flash on during exposure\
+        \ (low active)**\n - Duration = Exposure time (or shorter if required)\n -\
+        \ If necessary, set a delay\n - Inverted = true\n\n**Automatic flash (depending\
+        \ on model)**\n - AutoDuration = Activates (true) or deactivates (false) the\
+        \ automatic control of the flash output. If \"AutoDuration\" is activated,\
+        \ the manual value under \"Duration\" has no effect.\n"
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LightExternal'
+      responses:
+        '200':
+          description: New flash settings habe been applied.
+  /network:
+    options:
+      x-permission: guest
+      tags:
+      - Network
+      summary: Lists all options of the node.
+      description: Lists all options of the /network node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: guest
+      tags:
+      - Network
+      summary: Returns general network settings.
+      description: Returns general network settings, e.g MAC address.
+      responses:
+        '200':
+          description: Current network settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Network'
+    patch:
+      x-permission: service
+      tags:
+      - Network
+      summary: Changes general network settings.
+      description: 'Changes general network settings.
+
+
+        **NOTICE!** You need administrator privileges ("admin" user) to set the RestrictHTTP
+        node.
+
+        '
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NetworkSetter'
+      responses:
+        '200':
+          description: New network settings have been applied.
+  /network/ftpclient:
+    options:
+      x-permission: user
+      tags:
+      - Network
+      summary: Lists all options of the node.
+      description: Lists all options of the /network/ftpclient node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Network
+      summary: Returns the FTP connection settings.
+      description: 'Returns the FTP connection settings.
+
+
+        Only the "admin" user can read the password of the FTP client configuration
+        via GET.
+
+        '
+      responses:
+        '200':
+          description: Current FTP connection settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkFtpClient'
+    patch:
+      x-permission: service
+      tags:
+      - Network
+      summary: Changes the FTP connection settings.
+      description: Changes the FTP connection settings.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NetworkFtpClientSetter'
+      responses:
+        '200':
+          description: New FTP connection settings have been applied.
+    post:
+      x-permission: user
+      tags:
+      - Network
+      summary: Executes a FTP connection test.
+      description: Executes a FTP connection test. Returns HTTP code 200 if successfully,
+        503 otherwise.
+      responses:
+        '200':
+          description: FTP connection test was successfully.
+        '503':
+          description: FTP connection test failed.
+  /network/ipv4:
+    options:
+      x-permission: user
+      tags:
+      - Network
+      summary: Lists all options of the node.
+      description: Lists all options of the /network/ipv4 node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Network
+      summary: Returns the IPv4 network settings.
+      description: Returns the IPv4 network settings like IP address, gateway, etc.
+      responses:
+        '200':
+          description: Current IPv4 network settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkIpv4'
+    patch:
+      x-permission: service
+      tags:
+      - Network
+      summary: Sets the IPv4 settings.
+      description: 'Sets the IPv4 network settings.
+
+
+        **CAUTION!** The PATCH command does not check if the IP address is within
+        the permitted range. Therefore, you can also set an invalid IP address, which
+        means that you cannot communicate with the camera any more. Do not set an
+        invalid IP address, e.g. an IP address beginning with 0.
+
+
+        **NOTICE!** The interface configuration change is delayed by 1 second to allow
+        the client''s request to complete before the connection is re-established.
+
+        '
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NetworkIpv4'
+      responses:
+        '200':
+          description: New IPv4 settings have been applied.
+  /network/nameservers:
+    options:
+      x-permission: user
+      tags:
+      - Network
+      summary: Lists all options of the node.
+      description: Lists all options of the /network/nameservers node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Network
+      summary: Returns the name servers.
+      description: Returns the current name servers.
+      responses:
+        '200':
+          description: Current name servers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkNameservers'
+    patch:
+      x-permission: service
+      tags:
+      - Network
+      summary: Sets the name servers.
+      description: Sets the name servers.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NetworkNameservers'
+      responses:
+        '200':
+          description: New name servers have been applied.
+    delete:
+      x-permission: service
+      tags:
+      - Network
+      summary: Deletes all saved name servers.
+      description: Deletes all saved name servers.
+      responses:
+        '200':
+          description: Name servers have been deleted.
+  /network/ssl:
+    options:
+      x-permission: admin
+      tags:
+      - Network
+      summary: Lists all options of the node.
+      description: Lists all options of the /network/ssl node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: admin
+      tags:
+      - Network
+      summary: Returns custom SSL information.
+      description: Returns custom SSL information.
+      responses:
+        '200':
+          description: Current custom SSL information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkSsl'
+    put:
+      x-permission: admin
+      tags:
+      - Network
+      summary: Updates/installs a SSL package.
+      description: Updates/installs a SSL package.
+      requestBody:
+        content:
+          application/NXT_SSL:
+            schema:
+              type: string
+              format: binary
+          application/zip:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: SSL package has been installed/updated.
+    delete:
+      x-permission: admin
+      tags:
+      - Network
+      summary: Deletes the installed SSL package.
+      description: Deletes the installed SSL package.
+      responses:
+        '200':
+          description: SSL package has been deleted.
+  /network/timeserver:
+    options:
+      x-permission: user
+      tags:
+      - Network
+      summary: Lists all options of the node.
+      description: Lists all options of the /network/timeserver node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Network
+      summary: Returns the current time server.
+      description: Returns the current time server.
+      responses:
+        '200':
+          description: Current time server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetworkTimeserver'
+    patch:
+      x-permission: service
+      tags:
+      - Network
+      summary: Sets the time server.
+      description: "Sets the time server.\n\nThere are two possibilities for time\
+        \ synchronization via NTP. In both cases, the \"NTP\" node under /deviceinfo/datetime\
+        \ must be set to \"true\".\n\n  1. /deviceinfo/datetime -\\> node \"NTPServer\"\
+        \n  2. /network/timeserver -\\> node \"Timeserver\"\n\nA valid configuration\
+        \ of \"Timeserver\" is priorized higher than the server set under /deviceinfo/datetime.\n"
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NetworkTimeserver'
+      responses:
+        '200':
+          description: New time server has been applied.
+    delete:
+      x-permission: service
+      tags:
+      - Network
+      summary: Deletes the saved time server.
+      description: Deletes the saved time server.
+      responses:
+        '200':
+          description: Time server has been deleted.
+  /restinterface:
+    get:
+      x-permission: guest
+      tags:
+      - REST interface
+      summary: Documentation of the IDS NXT REST interface.
+      description: Opens the interactive documentation of the IDS NXT REST interface.
+      responses:
+        '200':
+          description: Interactive documentation of the IDS NXT REST interface.
+          content:
+            text/html:
+              schema:
+                type: string
+  /rs232:
+    options:
+      x-permission: user
+      tags:
+      - RS-232
+      summary: Lists all options of the node.
+      description: Lists all options of the /rs232 node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - RS-232
+      summary: Returns the RS-232 settings.
+      description: Returns the RS-232 settings.
+      responses:
+        '200':
+          description: Current RS-232 settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rs232'
+    patch:
+      x-permission: service
+      tags:
+      - RS-232
+      summary: Changes the RS-232 settings.
+      description: Changes the RS-232 settings like baud rate, stop bit length, or
+        parity settings.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Rs232'
+      responses:
+        '200':
+          description: New RS-232 settings have been applied.
+  /rs232/data:
+    options:
+      x-permission: service
+      tags:
+      - RS-232
+      summary: Lists all options of the node.
+      description: Lists all options of the /rs232/data node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: service
+      tags:
+      - RS-232
+      summary: Returns the received data.
+      description: Returns the received data from the RS-232 interface as binary data.
+      responses:
+        '200':
+          description: Received data as binary data.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+    put:
+      x-permission: service
+      tags:
+      - RS-232
+      summary: Sends data via the RS-232 interface.
+      description: Sends data via the RS-232 interface.
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Data has been sended.
+  /signals:
+    options:
+      x-permission: user
+      tags:
+      - Signals
+      summary: Lists all options of the node.
+      description: Lists all options of the /signals node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+  /signals/list:
+    options:
+      x-permission: user
+      tags:
+      - Signals
+      summary: Lists all options of the node.
+      description: Lists all options of the /signals/list node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Signals
+      summary: Returns the list of signals.
+      description: "Returns the list of signals as comma-separated value file.\n\n\
+        \ - Source can be either \"system\" or a vision app.\n - Note that because\
+        \ a \"since\" restriction transfers only part of the body, no If-Modified-Since\
+        \ is used here.\n\n**NOTICE!** Filtering by sender and severity is currently\
+        \ not possible.\n"
+      parameters:
+      - name: Senders
+        in: query
+        description: Limit to this sources, comma-seperated.
+        schema:
+          type: string
+      - name: Severities
+        in: query
+        description: Limit to this severities, comma-seperated.
+        schema:
+          type: string
+          enum:
+          - VisionOK
+          - VisionFailed
+          - Info
+          - Warning
+          - Error
+          - Critical
+      - name: Since
+        in: query
+        description: Limit to signals newer than this.
+        schema:
+          type: string
+        x-unit: RFC2822
+      responses:
+        '200':
+          description: Comma-separated list of signals.
+          content:
+            text/csv:
+              schema:
+                type: object
+    delete:
+      x-permission: service
+      tags:
+      - Signals
+      summary: Clears the list of signals.
+      description: Clears the list of signals.
+      responses:
+        '200':
+          description: List of signals has been cleared.
+  /signals/list/{signal}:
+    parameters:
+    - name: signal
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Signals
+      summary: Lists all options of the node.
+      description: Lists all options of the /signals/list/{signal} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Signals
+      summary: Returns the specific signal.
+      description: Returns the specific signal.
+      responses:
+        '200':
+          description: Specific signal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signal'
+  /signals/list/{signal}/image:
+    parameters:
+    - name: signal
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Signals
+      summary: Lists all options of the node.
+      description: Lists all options of the /signals/list/{signal}/image node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Signals
+      summary: Returns the event's image.
+      description: Returns the event's image. This is not always possible (may return
+        404).
+      parameters:
+      - $ref: '#/components/parameters/qualityParam'
+      - $ref: '#/components/parameters/maxWidthParam'
+      - $ref: '#/components/parameters/maxHeightParam'
+      responses:
+        '200':
+          description: Signal image.
+          content:
+            image/jpeg:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/png:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/bmp:
+              schema:
+                $ref: '#/components/schemas/Image'
+  /states:
+    options:
+      x-permission: guest
+      tags:
+      - States
+      summary: Lists all options of the node.
+      description: Lists all options of the /states node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: guest
+      tags:
+      - States
+      summary: Returns the state.
+      description: Returns the state.
+      responses:
+        '200':
+          description: Current state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/States'
+  /states/{state}:
+    parameters:
+    - name: state
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: guest
+      tags:
+      - States
+      summary: Lists all options of the node.
+      description: Lists all options of the /states/{state} node.
+      responses:
+        '200':
+          $ref: '#/paths/~1gpio/options/responses/200'
+    get:
+      x-permission: guest
+      tags:
+      - States
+      summary: Returns information about the selected state.
+      description: Returns information about the selected state.
+      responses:
+        '200':
+          description: Information about the selected state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/State'
+  /states/{state}/image:
+    parameters:
+    - name: state
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: guest
+      tags:
+      - States
+      summary: Lists all options of the node.
+      description: Lists all options of the /states/{state}/image node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: guest
+      tags:
+      - States
+      summary: Returns the state symbol.
+      description: Returns the state symbol.
+      parameters:
+      - $ref: '#/components/parameters/qualityParam'
+      - $ref: '#/components/parameters/maxWidthParam'
+      - $ref: '#/components/parameters/maxHeightParam'
+      responses:
+        '200':
+          description: Current state symbol.
+          content:
+            image/jpeg:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/png:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/bmp:
+              schema:
+                $ref: '#/components/schemas/Image'
+  /statistics:
+    options:
+      x-permission: user
+      tags:
+      - Statistics
+      summary: Lists all options of the node.
+      description: Lists all options of the /statistics node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Statistics
+      summary: Returns the statistic data.
+      description: 'Returns the statistic data like total images, missed images, etc.
+
+
+        **NOTICE!** The ID and number of counters can vary and is dynamic.
+
+
+        The ID "LastReset" is not a counter ID; it specifies the time of the last
+        counter reset.
+
+        '
+      responses:
+        '200':
+          description: Statistic data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Statistics'
+    delete:
+      x-permission: service
+      tags:
+      - Statistics
+      summary: Resets the statistic data.
+      description: Resets the statistic data.
+      responses:
+        '200':
+          description: Satistic data has been reset.
+  /statistics/change:
+    options:
+      x-permission: user
+      tags:
+      - Statistics
+      summary: Lists all options of the node.
+      description: List all options of the /statistics/change node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Statistics
+      summary: Returns the changes in statistics data over time.
+      description: Returns the changes in statistics data over time.
+      parameters:
+      - name: Span
+        in: query
+        schema:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 60000
+        description: Averaging timespan.
+        x-unit: milliseconds
+      responses:
+        '200':
+          description: Changes in statistics data over time.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsChange'
+  /support:
+    options:
+      x-permission: admin
+      tags:
+      - Support
+      summary: Lists all options of the node.
+      description: Lists all options of the /support node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: admin
+      tags:
+      - Support
+      summary: Returns the support file.
+      description: "Returns the support file.\n\nTo retrieve a support file, administrator\
+        \ privileges are required. The support file contains the following data.\n\
+        \n - messages\n - dmesg\n - output of top\n - output of ps\n - detailed version\
+        \ information\n - user.json (without passwords)\n - device information<br>\n\
+        \   - CPU, RAM and disk load<br>\n   - temperature<br>\n   - supply voltage<br>\n\
+        \   - device runtime<br>\n   - activated system states<br>\n   - statistical\
+        \ data<br>\n   - vision apps\n"
+      responses:
+        '200':
+          description: Support file.
+          content:
+            application/x-compressed-tar:
+              schema:
+                type: string
+                format: binary
+  /system:
+    options:
+      x-permission: admin
+      tags:
+      - System
+      summary: Lists all options of the node.
+      description: Lists all options of the /system node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+  /system/backup:
+    options:
+      x-permission: admin
+      tags:
+      - System
+      summary: Lists all options of the node.
+      description: Lists all options of the /system/backup node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: admin
+      tags:
+      - System
+      summary: Returns the system configuration backup.
+      description: Returns the system configuration backup of the camera including
+        vision apps.
+      responses:
+        '200':
+          description: System configuration backup.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/System'
+            application/x-tar:
+              schema:
+                type: string
+                format: binary
+    post:
+      x-permission: admin
+      tags:
+      - System
+      summary: Triggers the creation of the system configuration backup.
+      description: 'Triggers the creation of the system configuration backup.
+
+
+        **NOTICE!** The vision apps will be deactivated. If a backup is already created
+        on the camera it will be overwritten.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/backupencryptionpassword'
+      responses:
+        '200':
+          description: System configurationbackup has been created.
+    put:
+      x-permission: admin
+      tags:
+      - System
+      summary: Uploads a camera configuration backup file.
+      description: 'Uploads a camera configuration backup file.
+
+
+        **NOTICE!** The configuration must belong to a camera of the same sensor type
+        and same IDS NXT OS version. If a backup is already present on the camera
+        it will be overwritten.
+
+        '
+      parameters:
+      - $ref: '#/components/parameters/backupencryptionpassword'
+      requestBody:
+        content:
+          application/x-tar:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Camera configuration backup has been uploaded.
+    delete:
+      x-permission: admin
+      tags:
+      - System
+      summary: Removes the saved camera configuration backup file.
+      description: Removes the saved camera configuration backup file from the camera
+        and abort running the backup process.
+      responses:
+        '200':
+          description: Camera configuration backup file has been removed.
+  /system/reboot:
+    options:
+      x-permission: admin
+      tags:
+      - System
+      summary: Lists all options of the node.
+      description: Lists all options of the /system/reboot node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    post:
+      x-permission: admin
+      tags:
+      - System
+      summary: Triggers the reboot of the camera.
+      description: Triggers the reboot of the camera.
+      responses:
+        '200':
+          description: Camera is being rebooted.
+  /users:
+    options:
+      x-permission: admin
+      tags:
+      - Users
+      summary: Lists all options of the node.
+      description: Lists all options of the /users node.
+      responses:
+        '200':
+          $ref: '#/paths/~1gpio/options/responses/200'
+    get:
+      x-permission: admin
+      tags:
+      - Users
+      summary: Returns the user list.
+      description: Returns the user list.
+      responses:
+        '200':
+          description: User list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+  /users/{user}:
+    parameters:
+    - name: user
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Users
+      summary: Lists all options of the node.
+      description: Lists all options of the /users/{user} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Users
+      summary: Returns information on the selected user.
+      description: Returns information on the selected user. This request can be executed
+        by the user itself or by the administrator (user "admin").
+      responses:
+        '200':
+          description: User information of the selected user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      x-permission: user
+      tags:
+      - Users
+      summary: Changes the password of the selected user.
+      description: Changes the password of the selected user.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Password'
+      responses:
+        '200':
+          description: User password has been changed.
+  /vapps:
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns information on installed vision apps.
+      description: Returns information on installed vision apps.
+      responses:
+        '200':
+          description: Vision app list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VApps'
+  /vapps/activated:
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/activated node.
+      responses:
+        '200':
+          $ref: '#/paths/~1gpio/options/responses/200'
+  /vapps/activated/{vapp}:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: admin
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/activated/{vapp} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    put:
+      x-permission: admin
+      tags:
+      - Vision apps
+      summary: Starts/stops the selected vision app.
+      description: Starts/stops the selected vision app.
+      parameters:
+      - name: Temporary
+        description: If true, the vision app is deactivated temporarily only.
+        in: query
+        schema:
+          type: boolean
+      - name: gdb
+        description: If true, the vision app is started for debug. This parameter
+          is not persistent, this means that the parameter will be reset when the
+          camera is rebooted..
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Vision app has been started/stopped.
+    delete:
+      x-permission: admin
+      tags:
+      - Vision apps
+      summary: Stops the vision app.
+      description: Stops the vision app.
+      parameters:
+      - name: Temporary
+        description: If true, the vision app is deactivated temporarily only.
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Vision app has been stopped.
+  /vapps/{vapp}:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns information on the selected vision app.
+      description: 'Returns information on the selected vision app.
+
+
+        Objects like "Actions" or "Configurables", are only available if the vision
+        app is running, because these objects are created dynamically during runtime.
+
+
+        The FTP status is only available if the vision app uses the FTP client object.
+
+        '
+      responses:
+        '200':
+          description: Vision app information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VApp'
+    put:
+      x-permission: admin
+      tags:
+      - Vision apps
+      summary: Updates/installs a vision app.
+      description: 'Updates/installs a vision app.
+
+
+        Body for the PUT must be a vision app file (*.vapp).
+
+        '
+      requestBody:
+        content:
+          application/vapp:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Vision app has been updated/installed.
+    delete:
+      x-permission: admin
+      tags:
+      - Vision apps
+      summary: Removes the selected vision app.
+      description: Removes the selected vision app.
+      responses:
+        '200':
+          description: Vision app has been removed.
+  /vapps/{vapp}/actions:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/actions node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+  /vapps/{vapp}/actions/{action}:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: action
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/actions/{action} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the sction settings.
+      description: Returns the sction settings.
+      responses:
+        '200':
+          description: Action settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppAction'
+    post:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Executes the action.
+      description: Executes the action.
+      responses:
+        '200':
+          description: Action has been executed.
+  /vapps/{vapp}/avatar:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/avatar node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the avatar file of the vision app.
+      description: Returns the avatar file of the vision app.
+      parameters:
+      - $ref: '#/components/parameters/qualityParam'
+      - $ref: '#/components/parameters/maxWidthParam'
+      - $ref: '#/components/parameters/maxHeightParam'
+      responses:
+        '200':
+          description: Avatar file of the vision app.
+          content:
+            image/png:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/bmp:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/jpeg:
+              schema:
+                $ref: '#/components/schemas/Image'
+  /vapps/{vapp}/configurables:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/configurables node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the configurables of the vision app.
+      description: Returns the configurables of the vision app.
+      responses:
+        '200':
+          description: Configurables of the vision app.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppConfigurables'
+    patch:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Changes the configurables of the vision app.
+      description: Changes the configurables of the vision app.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VAppConfigurables'
+      responses:
+        '200':
+          description: Configurables of the vision app have been changed.
+  /vapps/{vapp}/files:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/files node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+  /vapps/{vapp}/files/{file}:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: file
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/files/{file} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the information on the selected file.
+      description: Returns the information on the selected file.
+      responses:
+        '200':
+          description: Information on the selected file.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppFile'
+  /vapps/{vapp}/files/{file}/data:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: file
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/files/{file}/data node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the data of the selected file.
+      description: Returns the data of the selected file.
+      responses:
+        '200':
+          description: Data of the selected file.
+          content:
+            application/octet-stream:
+              schema:
+                type: object
+    put:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Sets the selected file.
+      description: 'Sets the selected file.
+
+
+        To transmit the file name, add header value "Content-Disposition:Attachment;filename=<filename>(url
+        encoded)".
+
+        '
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: File has been set.
+    delete:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Deletes the selected file.
+      description: Deletes the selected file.
+      responses:
+        '200':
+          description: File has been deleted.
+  /vapps/{vapp}/ftpclient:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/ftpclient node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns information on the FTP client of the vision app.
+      description: Returns information on the FTP client of the vision app.
+      responses:
+        '200':
+          description: Information on the FTP client of the vision app.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HasFtpClient'
+  /vapps/{vapp}/images:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/images node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+  /vapps/{vapp}/images/{image}:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: image
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/images/{image} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the image information of the selected vision app.
+      description: Returns the image information of the selected vision app.
+      parameters:
+      - $ref: '#/components/parameters/qualityParam'
+      - $ref: '#/components/parameters/maxWidthParam'
+      - $ref: '#/components/parameters/maxHeightParam'
+      responses:
+        '200':
+          description: Image information of the selected vision app.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppImage'
+            image/jpeg:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/png:
+              schema:
+                $ref: '#/components/schemas/Image'
+            image/bmp:
+              schema:
+                $ref: '#/components/schemas/Image'
+  /vapps/{vapp}/infos:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/infos node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the information elements of the vision app.
+      description: "Returns the information elements of the vision app.\n\n - Each\
+        \ information element can be assigned to one of the three categories \"Info\"\
+        , \"Warning\", or \"Error\".\n - Information elements can only be queried\
+        \ via REST.\n - The information is not persistent, i.e. it is deleted after\
+        \ a reboot of the camera.\n\nYou can find examples of how to use the information\
+        \ element in the programming examples on [GitHub](https://github.com/ids-imaging/ids-nxt-vision-app-examples/tree/main/vision-apps).\n"
+      responses:
+        '200':
+          description: Information elements of the vision app.
+          content:
+            application/json:
+              schema:
+                type: object
+  /vapps/{vapp}/license:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/license node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the license information of the vision app.
+      description: Returns the license information of the vision app.
+      responses:
+        '200':
+          description: License information of the vision app.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /vapps/{vapp}/log:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/log node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the log of the vision app.
+      description: Returns the log of the vision app.
+      responses:
+        '200':
+          description: Log of the vision app.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /vapps/{vapp}/resultsinks:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/resultsinks node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+  /vapps/{vapp}/resultsinks/{resultsink}:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: resultsink
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/resultsinks/{resultsink}
+        node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the data of the selected result sink.
+      description: Returns the data of the selected result sink.
+      responses:
+        '200':
+          description: Data of the selected result sink.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppResultSink'
+    patch:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Sets the data of the selected result sink.
+      description: Sets the data of the selected result sink.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VAppResultSinkSetter'
+      responses:
+        '200':
+          description: Data of the selected result sink has been set.
+  /vapps/{vapp}/resultsources:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/resultsources node.
+      responses:
+        '200':
+          $ref: '#/paths/~1gpio/options/responses/200'
+  /vapps/{vapp}/resultsources/dummy:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/resultsources/dummy node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the data of the dummy result source.
+      description: Returns the data of the dummy result source.
+      responses:
+        '200':
+          description: Data of the dummy result source.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppResultsource'
+  /vapps/{vapp}/resultsources/last:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/resultsources/last node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the data of the last result source.
+      description: Returns the data of the last result source.
+      responses:
+        '200':
+          description: Data of the last result source.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppResultsource'
+  /vapps/{vapp}/resultsources/list:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: 'Lists all options of the /vapps/{vapp}/resultsources/list node.
+
+
+        Objects are the last N results (e.g. N = 50, but should be dynamic when used).
+        The list is sorted with the last result at the end.
+
+        '
+      responses:
+        '200':
+          $ref: '#/paths/~1gpio/options/responses/200'
+  /vapps/{vapp}/resultsources/list/{key}:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: key
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/resultsources/list/{key}
+        node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the data of the selected result source.
+      description: Returns the data of the selected result source.
+      responses:
+        '200':
+          description: Data of the selected result source.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppResultsource'
+  /vapps/{vapp}/roimanager:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/roimanager node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns information on the managed ROIs.
+      description: Returns information on the managed ROIs (region of interest).
+      responses:
+        '200':
+          description: Information on the managed ROIs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaxRois'
+  /vapps/{vapp}/roimanager/roiconfig:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/roimanager/roiconfig node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the configuration of all managed ROIs of the vision app.
+      description: Returns the configuration of all managed ROIs (region of interest)
+        of the vision app.
+      responses:
+        '200':
+          description: Configuration of all managed ROIs of the vision app.
+          content:
+            application/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
+    put:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Sets the configuration of all managed ROIs of the vision app.
+      description: Sets the configuration of all managed ROIs (region of interest)
+        of the vision app.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+          application/xml:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Configuration of all managed ROIs has been set.
+  /vapps/{vapp}/rois:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/rois node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    post:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Adds a configurable ROI to the vision app.
+      description: Adds a configurable ROI to the vision app.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VAppRoi'
+      responses:
+        '200':
+          description: Configurable ROI has been added to the vision app.
+    delete:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Removes all managed ROIs of the vision app.
+      description: Removes all managed ROIs of the vision app.
+      responses:
+        '200':
+          description: All managed ROIs have been removed.
+  /vapps/{vapp}/rois/{roi}:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: roi
+      in: path
+      required: true
+      schema:
+        type: string
+    options:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Lists all options of the node.
+      description: Lists all options of the /vapps/{vapp}/rois/{roi} node.
+      responses:
+        '200':
+          $ref: '#/components/responses/DefaultOptions'
+    get:
+      x-permission: user
+      tags:
+      - Vision apps
+      summary: Returns the setting of the selected ROI.
+      description: Returns the settings of the selected ROI (region of interest).
+        If the ROI is rotated the parameters "OffsetX" and "OffsetY" will be -1.
+      responses:
+        '200':
+          description: Settings of the selected ROI.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VAppRoi'
+    patch:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Sets a ROI (region of interest).
+      description: 'Sets a ROI (region of interest).
+
+
+        **NOTICE!** If the ROI should be rotated, the parameters "CenterX", "CenterY"
+        and "Angle" must be used. In this case "OffsetX" and "OffsetY" will be ignored.
+        For a non rotated ROI please use "OffsetX" and "OffsetY" instead.
+
+        '
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VAppRoi'
+      responses:
+        '200':
+          description: ROI has been set.
+    delete:
+      x-permission: service
+      tags:
+      - Vision apps
+      summary: Removes the selected ROI.
+      description: Removes the selected ROI (region of interest).
+      responses:
+        '200':
+          description: ROI has been removed.
+  /vapps/{vapp}/website:
+    parameters:
+    - name: vapp
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      x-permission: guest
+      tags:
+      - Vision apps
+      summary: Returns the website of the selected vision app.
+      description: 'Returns the website of the selected vision app.
+
+
+        The website of a vision app can be opened via http://\<camera IP address\>/vapps/\<vision
+        app\>/website.
+
+        '
+      responses:
+        '200':
+          description: Vision app website.
+          content:
+            text/html:
+              schema:
+                type: string
+components:
+  parameters:
+    backupencryptionpassword:
+      name: backupencryptionpassword
+      in: query
+      description: Encryption password for camera system backup.
+      required: true
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      description: How many items to return at one time (max 100)
+      required: false
+      schema:
+        type: integer
+        format: int64
+    maxHeightParam:
+      name: MaxHeight
+      in: query
+      schema:
+        type: integer
+        format: int64
+      description: Maximum image height.
+    maxWidthParam:
+      name: MaxWidth
+      in: query
+      schema:
+        type: integer
+        format: int64
+      description: Maximum image width.
+    qualityParam:
+      name: Quality
+      in: query
+      schema:
+        type: integer
+        format: int64
+      description: Image quality.
+  schemas:
+    Camera:
+      type: object
+      properties:
+        Binning:
+          type: string
+          enum:
+          - 'Off'
+          - 2x2
+          - 4x4
+          description: Binning mode.
+        ExposureTime:
+          type: integer
+          format: int64
+          x-unit: microseconds
+          description: Exposure time in microseconds.
+        FlipHorizontal:
+          type: boolean
+          description: Horizontal image flip.
+        FlipVertical:
+          type: boolean
+          description: Vertical image flip.
+        Gain:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 100
+          x-unit: per cent
+          description: Gain settings.
+        GainAuto:
+          type: string
+          description: Gain auto.
+          enum:
+          - 'Off'
+          - Continuous
+        GammaCorrection:
+          maximum: 3
+          minimum: 0.30000001192092896
+          type: number
+          format: double
+          description: 'Gamma correction factor.
+
+
+            If you set a value for gamma correction that is outside of the valid range,
+            e.g. if the value is too large (small), the value is automatically corrected
+            to the maximum (minimum) possible value.
+
+            '
+        LineRate:
+          type: integer
+          format: int64
+          x-unit: millihertz
+          description: Line rate in millihertz.
+        LineScanMode:
+          type: boolean
+          description: Line scan mode.
+        LineTrigger:
+          type: boolean
+          description: Line trigger.
+    Color:
+      type: object
+      properties:
+        BlueGain:
+          description: Value of blue gain.
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          x-unit: per cent
+        GreenGain:
+          description: Value of green gain.
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          x-unit: per cent
+        RedGain:
+          description: Value of red gain.
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          x-unit: per cent
+        WhiteBalance:
+          description: White balance settings.
+          type: string
+          enum:
+          - 'Off'
+          - Continuous
+    ColorCorrection:
+      type: object
+      properties:
+        ColorCorrectionMatrixType:
+          type: string
+          description: Color correction matrix type.
+          enum:
+          - HQ
+          - Custom0
+        ColorCorrectionMode:
+          type: string
+          description: Color correction mode.
+          enum:
+          - 'Off'
+          - Auto
+    ColorCorrectionGain:
+      type: number
+      format: double
+      minimum: -8
+      maximum: 7.99609375
+    ColorCorrectionMatrix:
+      type: object
+      properties:
+        Gain00:
+          description: This is the red contribution to the red pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+        Gain01:
+          description: This is the green contribution to the red pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+        Gain02:
+          description: This is the blue contribution to the red pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+        Gain10:
+          description: This is the red contribution to the green pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+        Gain11:
+          description: This is the green contribution to the green pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+        Gain12:
+          description: This is the blue contribution to the green pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+        Gain20:
+          description: This is the red contribution to the blue pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+        Gain21:
+          description: This is the green contribution to the blue pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+        Gain22:
+          description: This is the blue contribution to the blue pixel (multiplicative
+            factor).
+          type: number
+          format: double
+          minimum: -8
+          maximum: 7.99609375
+    Deviceinfo:
+      type: object
+      properties:
+        Color:
+          type: boolean
+          description: True if it is a color model.
+        CPULoad:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          x-unit: per cent
+          description: Total CPU load.
+        DateTime:
+          type: string
+          format: date-time
+          description: Server time. Must be of format "RFC 2822 date" e.g. "Fri, 1
+            Jan 2010 00:00:00 UTC"
+        DeviceModel:
+          type: string
+          description: Device model.
+        DeviceName:
+          type: string
+          description: Given name of the device. The expected string must not contain
+            "=".
+        DeviceType:
+          type: string
+          description: Type of the device.
+        DiskLoad:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          x-rangewarning0-max: 100
+          x-rangewarning0-min: 75
+          x-unit: per cent
+          description: Total disk load.
+        FPS:
+          type: number
+          format: double
+          x-unit: fps
+          description: Frames per seconds on average.
+        Language:
+          type: string
+          enum:
+          - en
+          description: Default language.
+        Location:
+          type: string
+          description: Given location of the device.
+        NetworkRx:
+          type: integer
+          format: int64
+          x-unit: bytes per seconds
+          description: Bytes received over network per second.
+        NetworkTx:
+          type: integer
+          format: int64
+          x-unit: bytes per seconds
+          description: Bytes sent over network per second.
+        RAMLoad:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          x-unit: per cent
+          description: Total RAM load.
+        Serialnumber:
+          type: string
+          description: Serial number of the device.
+        Temperature:
+          type: number
+          format: double
+          minimum: -5
+          maximum: 120
+          x-rangewarning0-max: 0
+          x-rangewarning0-min: -5
+          x-rangewarning1-max: 91
+          x-rangewarning1-min: 78
+          x-rangeerror0-max: -5
+          x-rangeerror0-min: -5
+          x-rangeerror1-max: 120
+          x-rangeerror1-min: 91
+          x-unit: Degrees Celsius
+          description: Device temperature in degrees Celcius.
+        UniqueID:
+          type: string
+          description: Unique ID which is used for device identification.
+        Uptime:
+          type: integer
+          format: int64
+          description: Uptime in seconds.
+        Version:
+          type: string
+          description: Firmware version of the device.
+        VSupply:
+          type: number
+          format: double
+          minimum: 5
+          maximum: 50
+          x-rangewarning0-max: 30
+          x-rangewarning0-min: 28
+          x-rangewarning1-max: 11.5
+          x-rangewarning1-min: 11
+          x-rangeerror0-max: 11
+          x-rangeerror0-min: 5
+          x-rangeerror1-max: 50
+          x-rangeerror1-min: 30
+          x-unit: volt
+          description: Supply voltage.
+    DeviceinfoSetter:
+      type: object
+      properties:
+        DateTime:
+          type: string
+          format: date-time
+          description: Server time. Must be of format "RFC 2822 date" e.g. "Fri, 1
+            Jan 2010 00:00:00 UTC".
+        DeviceName:
+          type: string
+          description: Given name of the device. The expected string must not contain
+            "=".
+        Language:
+          type: string
+          enum:
+          - en
+          description: Default language.
+        Location:
+          type: string
+          description: Given location of the device.
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int64
+        message:
+          type: string
+    Gain:
+      type: number
+      format: double
+      minimum: 0
+      maximum: 100
+      x-unit: per cent
+    Gpio:
+      type: object
+      properties:
+        Inverter:
+          type: boolean
+          description: Enabled additional inverter. If "true", 0 V input means on-level.
+        Level:
+          type: boolean
+          description: Logic-Level, note that true hardware level depends on invert.
+        Title:
+          type: string
+          description: Pin title.
+    GpioInputSetter:
+      type: object
+      properties:
+        Inverter:
+          type: boolean
+          description: Enabled additional inverter. If "true", 0 V input means on-level.
+    GpioOutputSetter:
+      type: object
+      properties:
+        Inverter:
+          type: boolean
+          description: Enabled additional inverter. If true, 0 V input means on-level.
+        Level:
+          type: boolean
+          description: Logic-Level, note that true hardware level depends on invert.
+    HasFtpClient:
+      type: object
+      properties:
+        hasFtpClient:
+          description: Flag to indicate if the vision app uses the FTP client.
+          type: boolean
+    Image:
+      type: string
+      format: binary
+      description: The content of the image file.
+    ImageParameters:
+      type: object
+      properties:
+        MaxHeight:
+          description: Maximum image height.
+          type: integer
+          format: int64
+        MaxWidth:
+          description: Maximum image width.
+          type: integer
+          format: int64
+        Quality:
+          description: Image quality.
+          type: integer
+          format: int64
+    LightExternal:
+      type: object
+      properties:
+        AutoDuration:
+          type: boolean
+          description: Automatic flash duration configuration based on exposure time
+            and sensor.
+        Delay:
+          type: integer
+          format: int64
+          description: Flash delay in microseconds.
+          minimum: 0
+          maximum: 16777215
+          x-unit: microseconds
+        Duration:
+          type: integer
+          format: int64
+          description: Flash on-time.
+          minimum: 0
+          maximum: 16777215
+          x-unit: microseconds
+        Inverted:
+          type: boolean
+          description: Inverts the flash signal.
+    MaxRois:
+      type: object
+      properties:
+        MaxRois:
+          description: Maximum number of managable ROIs.
+          type: integer
+          format: int64
+    Network:
+      type: object
+      properties:
+        MAC:
+          type: string
+          description: MAC address.
+          format: mac
+        RestrictHTTP:
+          type: boolean
+          description: If true, HTTP connections will be redirected to HTTPS.
+    NetworkFtpClient:
+      type: object
+      properties:
+        Enabled:
+          description: Enable/disable the FTP client
+          type: boolean
+        ServerPassword:
+          type: string
+          description: Password of the FTP server used by the camera.
+        ServerURL:
+          type: string
+          description: URL of the FTP server used by the camera. Must be of format
+            "ftp://user:password@host:port". Where user, password and port are optional.
+        Status:
+          type: string
+          description: Status of the last connection to the FTP server. Each app can
+            have its own status.
+        Timeout:
+          type: integer
+          format: int64
+          description: Timeout of the FTP transmissions.
+          minimum: 10
+          maximum: 1000
+          x-unit: milliseconds
+        UserName:
+          type: string
+          description: User name for the FTP connection.
+    NetworkFtpClientSetter:
+      type: object
+      properties:
+        Enabled:
+          description: Enable/disable the FTP client.
+          type: boolean
+        ServerPassword:
+          type: string
+          description: Password of the FTP server used by the camera.
+        ServerURL:
+          type: string
+          description: URL of the FTP server used by the camera. Must be of format
+            "ftp://user:password@host:port". User, password, and port are optional.
+        Timeout:
+          type: integer
+          format: int64
+          description: Timeout of the FTP transmissions.
+          minimum: 10
+          maximum: 1000
+          x-unit: milliseconds
+        UserName:
+          type: string
+          description: User name for the FTP connection.
+    NetworkIpv4:
+      type: object
+      properties:
+        Address:
+          type: string
+          description: Local IP address, only valid for non-DHCP method. Must be of
+            format "xxx.xxx.xxx.xxx".
+          format: ipv4
+        DHCP:
+          type: boolean
+          description: If "true", DHCP is used to obtain an IP address.
+        Gateway:
+          type: string
+          description: IP address of the gateway. Must be of format "xxx.xxx.xxx.xxx".
+          format: ipv4
+        Netmask:
+          type: string
+          description: Current netmask. Must be of format "xxx.xxx.xxx.xxx".
+          format: ipv4
+    NetworkNameservers:
+      type: object
+      properties:
+        Nameserver1:
+          type: string
+          description: Current name server. Must be of format "xxx.xxx.xxx.xxx".
+          format: ipv4
+        Nameserver2:
+          type: string
+          description: Current name server 2. Must be of format "xxx.xxx.xxx.xxx".
+          format: ipv4
+    NetworkSetter:
+      type: object
+      properties:
+        RestrictHTTP:
+          type: boolean
+          description: If true, HTTP connections will be redirected to HTTPS.
+    NetworkSsl:
+      type: object
+      properties:
+        Exists:
+          type: boolean
+          description: If "true", custom SSL files are available.
+        Issuer:
+          type: string
+          description: Issuer of the SSL files.
+    NetworkTimeserver:
+      type: object
+      properties:
+        Timeserver:
+          description: Current time server. Must be of format "xxx.xxx.xxx.xxx".
+          type: string
+    Password:
+      type: object
+      properties:
+        Password:
+          description: New password to be set. The expected string must not contain
+            "?", ":" or "=" and has to be percent encoded. The password can be changed
+            by the user itself or by the administrator ("admin" user).
+          type: string
+    ROI:
+      type: object
+      properties:
+        Height:
+          type: integer
+          format: int64
+          x-unit: pixel
+          description: Height of the ROI.
+        OffsetX:
+          type: integer
+          format: int64
+          x-unit: pixel
+          description: X-coordinate of upper left corner of the ROI.
+        OffsetY:
+          type: integer
+          format: int64
+          x-unit: pixel
+          description: Y-coordinate of upper left corner of the ROI.
+        Width:
+          type: integer
+          format: int64
+          x-unit: pixel
+          description: Width of the ROI.
+    ROIHeight:
+      type: integer
+      format: int64
+      minimum: 2
+      maximum: 2048
+      x-unit: pixel
+      x-step: 2
+      description: Height of the ROI.
+    ROIWidth:
+      type: integer
+      format: int64
+      minimum: 32
+      maximum: 2448
+      x-unit: pixel
+      x-step: 8
+      description: Width of the ROI.
+    Rs232:
+      type: object
+      properties:
+        Baudrate:
+          description: Baud rate (Bd).
+          type: integer
+          format: int64
+          x-unit: baud
+          enum:
+          - 300
+          - 1200
+          - 2400
+          - 4800
+          - 9600
+          - 19200
+          - 38400
+          - 57600
+          - 115200
+          - 230400
+        Parity:
+          description: Parity settings.
+          type: string
+          enum:
+          - None
+          - Even
+          - Odd
+        Stopbits:
+          description: Stop bit length.
+          type: string
+          enum:
+          - One
+          - OneAndHalf
+          - Two
+    Signal:
+      type: object
+      properties:
+        Brief:
+          description: Brief description of signal.
+          type: string
+        Message:
+          description: Detailed signal message.
+          type: string
+        Sender:
+          description: Sender/creator of the signal.
+          type: string
+        Severity:
+          $ref: '#/components/schemas/SignalSeverity'
+        Timestamp:
+          description: Time of signal creation.
+          type: string
+          format: date-time
+          x-unit: RFC2822
+    SignalSeverity:
+      type: string
+      description: Type of the signal.
+      enum:
+      - Vision OK
+      - Vision Failed
+      - Info
+      - Warning
+      - Error
+      - Critical
+    SignalsListParameters:
+      type: object
+      properties:
+        Senders:
+          description: Limit to this sources, comma-seperated.
+          type: string
+        Severities:
+          description: Limit to this severities, comma-seperated.
+          enum:
+          - VisionOK
+          - VisionFailed
+          - Info
+          - Warning
+          - Error
+          - Critical
+          type: string
+        Since:
+          description: Limit to signals newer than this.
+          type: string
+          x-unit: RFC2822
+    State:
+      type: object
+      properties:
+        Brief:
+          description: Brief description.
+          type: string
+        Description:
+          description: Description.
+          type: string
+        Title:
+          description: Title.
+          type: string
+        Type:
+          description: Type.
+          type: string
+    States:
+      type: object
+      properties:
+        Active:
+          $ref: '#/components/schemas/StatesActive'
+    StatesActive:
+      description: Identifier of active states.
+      type: array
+      items:
+        type: string
+        enum:
+        - BuffersFilled
+        - DiskLoadTooHigh
+        - FirmwareUpdate
+        - NoEthernet
+        - NoTrigger
+        - ObtainingDHCP
+        - Paused
+        - TemperatureTooHigh
+        - Training
+        - VSupplyTooHigh
+        - VSupplyTooLow
+    Statistics:
+      type: object
+      properties:
+        ImageFree:
+          description: Number of free image buffers.
+          type: integer
+          format: int64
+        ImageMissed:
+          description: Number of missed triggers.
+          type: integer
+          format: int64
+        ImageTotal:
+          description: Number of captured images.
+          type: integer
+          format: int64
+        LastReset:
+          description: Time of last reset.
+          type: string
+          x-unit: RFC2822
+        VisionFailed:
+          description: Number of unsuccessfully processed images.
+          type: integer
+          format: int64
+        VisionOK:
+          description: Number of successfully processed images.
+          type: integer
+          format: int64
+    StatisticsChange:
+      type: object
+      properties:
+        ImageFree:
+          description: Number of free image buffers.
+          type: integer
+          format: int64
+        ImageMissed:
+          description: Number of missed triggers.
+          type: integer
+          format: int64
+        ImageTotal:
+          description: Number of captured images.
+          type: integer
+          format: int64
+        VisionFailed:
+          description: Number of unsuccessfully processed images.
+          type: integer
+          format: int64
+        VisionOK:
+          description: Number of successfully processed images.
+          type: integer
+          format: int64
+    StatisticsParameters:
+      type: object
+      properties:
+        Span:
+          type: integer
+          format: int64
+          description: Averaging time span.
+          minimum: 0
+          maximum: 60000
+          x-unit: milliseconds
+    StringList:
+      type: object
+      properties:
+        Objects:
+          type: array
+          items:
+            type: string
+    System:
+      type: object
+      properties:
+        BackupAvailable:
+          description: Flag indicating whether a system backup was created on the
+            camera and is ready to be downloaded.
+          type: boolean
+        Progress:
+          description: Progress of the creation of the system backup.
+          maximum: 100
+          minimum: 0
+          type: integer
+          format: int64
+          x-unit: per cent
+        Status:
+          description: Status regarding the system backup.
+          type: string
+    TestImage:
+      type: object
+      properties:
+        Enabled:
+          type: boolean
+          description: Status of the custom test image mode.
+    Testpattern:
+      type: object
+      properties:
+        Testpattern:
+          type: string
+          enum:
+          - 'Off'
+          - VerticalWedge
+          - HorizontalWedge
+          - White
+          - Black
+          - Grayscale
+          - Checkerboard
+          - GreyDiagonalRampMoving
+          - SequencePattern1
+          - SequencePattern2
+          - Framecount
+          - ColorStripe
+          description: Test images and pattern.
+    Time:
+      type: object
+      properties:
+        DateTime:
+          description: Server time. Must be of format "RFC 2822 date" e.g. "Fri, 1
+            Jan 2010 00:00:00 UTC".
+          type: string
+          format: date-time
+        NTP:
+          description: True if NTP is enabled.
+          type: boolean
+        NTPServer:
+          description: Must be of format "xxx.xxx.xxx.xxx".
+          type: string
+        Timezone:
+          description: Current used time zone.
+          type: string
+          x-unit: IANA timezone
+          enum:
+          - America/Adak
+          - America/Anchorage
+          - America/Anguilla
+          - America/Antigua
+          - America/Araguaina
+          - America/Argentina
+          - America/Aruba
+          - America/Asuncion
+          - America/Atikokan
+          - America/Atka
+          - America/Bahia
+          - America/Bahia_Banderas
+          - America/Barbados
+          - America/Belem
+          - America/Belize
+          - America/Blanc-Sablon
+          - America/Boa_Vista
+          - America/Bogota
+          - America/Boise
+          - America/Buenos_Aires
+          - America/Cambridge_Bay
+          - America/Campo_Grande
+          - America/Cancun
+          - America/Caracas
+          - America/Catamarca
+          - America/Cayenne
+          - America/Cayman
+          - America/Chicago
+          - America/Chihuahua
+          - America/Coral_Harbour
+          - America/Cordoba
+          - America/Costa_Rica
+          - America/Creston
+          - America/Cuiaba
+          - America/Curacao
+          - America/Danmarkshavn
+          - America/Dawson
+          - America/Dawson_Creek
+          - America/Denver
+          - America/Detroit
+          - America/Dominica
+          - America/Edmonton
+          - America/Eirunepe
+          - America/El_Salvador
+          - America/Ensenada
+          - America/Fort_Nelson
+          - America/Fort_Wayne
+          - America/Fortaleza
+          - America/Glace_Bay
+          - America/Godthab
+          - America/Goose_Bay
+          - America/Grand_Turk
+          - America/Grenada
+          - America/Guadeloupe
+          - America/Guatemala
+          - America/Guayaquil
+          - America/Guyana
+          - America/Halifax
+          - America/Havana
+          - America/Hermosillo
+          - America/Indiana
+          - America/Indianapolis
+          - America/Inuvik
+          - America/Iqaluit
+          - America/Jamaica
+          - America/Jujuy
+          - America/Juneau
+          - America/Kentucky
+          - America/Knox_IN
+          - America/Kralendijk
+          - America/La_Paz
+          - America/Lima
+          - America/Los_Angeles
+          - America/Louisville
+          - America/Lower_Princes
+          - America/Maceio
+          - America/Managua
+          - America/Manaus
+          - America/Marigot
+          - America/Martinique
+          - America/Matamoros
+          - America/Mazatlan
+          - America/Mendoza
+          - America/Menominee
+          - America/Merida
+          - America/Metlakatla
+          - America/Mexico_City
+          - America/Miquelon
+          - America/Moncton
+          - America/Monterrey
+          - America/Montevideo
+          - America/Montreal
+          - America/Montserrat
+          - America/Nassau
+          - America/New_York
+          - America/Nipigon
+          - America/Nome
+          - America/Noronha
+          - America/North_Dakota
+          - America/Ojinaga
+          - America/Panama
+          - America/Pangnirtung
+          - America/Paramaribo
+          - America/Phoenix
+          - America/Port-au-Prince
+          - America/Port_of_Spain
+          - America/Porto_Acre
+          - America/Porto_Velho
+          - America/Puerto_Rico
+          - America/Punta_Arenas
+          - America/Rainy_River
+          - America/Rankin_Inlet
+          - America/Recife
+          - America/Regina
+          - America/Resolute
+          - America/Rio_Branco
+          - America/Rosario
+          - America/Santa_Isabel
+          - America/Santarem
+          - America/Santiago
+          - America/Santo_Domingo
+          - America/Sao_Paulo
+          - America/Scoresbysund
+          - America/Shiprock
+          - America/Sitka
+          - America/St_Barthelemy
+          - America/St_Johns
+          - America/St_Kitts
+          - America/St_Lucia
+          - America/St_Thomas
+          - America/St_Vincent
+          - America/Swift_Current
+          - America/Tegucigalpa
+          - America/Thule
+          - America/Thunder_Bay
+          - America/Tijuana
+          - America/Toronto
+          - America/Tortola
+          - America/Vancouver
+          - America/Virgin
+          - America/Whitehorse
+          - America/Winnipeg
+          - America/Yakutat
+          - America/Yellowknife
+          - America/North_Dakota/Beulah
+          - America/North_Dakota/Center
+          - America/North_Dakota/New_Salem
+          - America/Argentina/Buenos_Aires
+          - America/Argentina/Catamarca
+          - America/Argentina/ComodRivadavia
+          - America/Argentina/Cordoba
+          - America/Argentina/Jujuy
+          - America/Argentina/La_Rioja
+          - America/Argentina/Mendoza
+          - America/Argentina/Rio_Gallegos
+          - America/Argentina/Salta
+          - America/Argentina/San_Juan
+          - America/Argentina/San_Luis
+          - America/Argentina/Tucuman
+          - America/Argentina/Ushuaia
+          - America/Kentucky/Louisville
+          - America/Kentucky/Monticello
+          - America/Indiana/Indianapolis
+          - America/Indiana/Knox
+          - America/Indiana/Marengo
+          - America/Indiana/Petersburg
+          - America/Indiana/Tell_City
+          - America/Indiana/Vevay
+          - America/Indiana/Vincennes
+          - America/Indiana/Winamac
+          - Etc/GMT
+          - Etc/GMT-0
+          - Etc/GMT-1
+          - Etc/GMT-10
+          - Etc/GMT-11
+          - Etc/GMT-12
+          - Etc/GMT-2
+          - Etc/GMT-3
+          - Etc/GMT-4
+          - Etc/GMT-5
+          - Etc/GMT-6
+          - Etc/GMT-7
+          - Etc/GMT-8
+          - Etc/GMT-9
+          - Etc/GMT+0
+          - Etc/GMT+1
+          - Etc/GMT+10
+          - Etc/GMT+11
+          - Etc/GMT+12
+          - Etc/GMT+13
+          - Etc/GMT+14
+          - Etc/GMT+2
+          - Etc/GMT+3
+          - Etc/GMT+4
+          - Etc/GMT+5
+          - Etc/GMT+6
+          - Etc/GMT+7
+          - Etc/GMT+8
+          - Etc/GMT+9
+          - Etc/GMT0
+          - Etc/Greenwich
+          - Etc/UCT
+          - Etc/Universal
+          - Etc/UTC
+          - Etc/Zulu
+          - Europe/Amsterdam
+          - Europe/Andorra
+          - Europe/Astrakhan
+          - Europe/Athens
+          - Europe/Belfast
+          - Europe/Belgrade
+          - Europe/Berlin
+          - Europe/Bratislava
+          - Europe/Brussels
+          - Europe/Bucharest
+          - Europe/Budapest
+          - Europe/Busingen
+          - Europe/Chisinau
+          - Europe/Copenhagen
+          - Europe/Dublin
+          - Europe/Gibraltar
+          - Europe/Guernsey
+          - Europe/Helsinki
+          - Europe/Isle_of_Man
+          - Europe/Istanbul
+          - Europe/Jersey
+          - Europe/Kaliningrad
+          - Europe/Kiev
+          - Europe/Kirov
+          - Europe/Lisbon
+          - Europe/Ljubljana
+          - Europe/London
+          - Europe/Luxembourg
+          - Europe/Madrid
+          - Europe/Malta
+          - Europe/Mariehamn
+          - Europe/Minsk
+          - Europe/Monaco
+          - Europe/Moscow
+          - Europe/Nicosia
+          - Europe/Oslo
+          - Europe/Paris
+          - Europe/Podgorica
+          - Europe/Prague
+          - Europe/Riga
+          - Europe/Rome
+          - Europe/Samara
+          - Europe/San_Marino
+          - Europe/Sarajevo
+          - Europe/Saratov
+          - Europe/Simferopol
+          - Europe/Skopje
+          - Europe/Sofia
+          - Europe/Stockholm
+          - Europe/Tallinn
+          - Europe/Tirane
+          - Europe/Tiraspol
+          - Europe/Ulyanovsk
+          - Europe/Uzhgorod
+          - Europe/Vaduz
+          - Europe/Vatican
+          - Europe/Vienna
+          - Europe/Vilnius
+          - Europe/Volgograd
+          - Europe/Warsaw
+          - Europe/Zagreb
+          - Europe/Zaporozhye
+          - Europe/Zurich
+          - Asia/Aden
+          - Asia/Almaty
+          - Asia/Amman
+          - Asia/Anadyr
+          - Asia/Aqtau
+          - Asia/Aqtobe
+          - Asia/Ashgabat
+          - Asia/Ashkhabad
+          - Asia/Atyrau
+          - Asia/Baghdad
+          - Asia/Bahrain
+          - Asia/Baku
+          - Asia/Bangkok
+          - Asia/Barnaul
+          - Asia/Beirut
+          - Asia/Bishkek
+          - Asia/Brunei
+          - Asia/Calcutta
+          - Asia/Chita
+          - Asia/Choibalsan
+          - Asia/Chongqing
+          - Asia/Chungking
+          - Asia/Colombo
+          - Asia/Dacca
+          - Asia/Damascus
+          - Asia/Dhaka
+          - Asia/Dili
+          - Asia/Dubai
+          - Asia/Dushanbe
+          - Asia/Famagusta
+          - Asia/Gaza
+          - Asia/Harbin
+          - Asia/Hebron
+          - Asia/Ho_Chi_Minh
+          - Asia/Hong_Kong
+          - Asia/Hovd
+          - Asia/Irkutsk
+          - Asia/Istanbul
+          - Asia/Jakarta
+          - Asia/Jayapura
+          - Asia/Jerusalem
+          - Asia/Kabul
+          - Asia/Kamchatka
+          - Asia/Karachi
+          - Asia/Kashgar
+          - Asia/Kathmandu
+          - Asia/Katmandu
+          - Asia/Khandyga
+          - Asia/Kolkata
+          - Asia/Krasnoyarsk
+          - Asia/Kuala_Lumpur
+          - Asia/Kuching
+          - Asia/Kuwait
+          - Asia/Macao
+          - Asia/Macau
+          - Asia/Magadan
+          - Asia/Makassar
+          - Asia/Manila
+          - Asia/Muscat
+          - Asia/Nicosia
+          - Asia/Novokuznetsk
+          - Asia/Novosibirsk
+          - Asia/Omsk
+          - Asia/Oral
+          - Asia/Phnom_Penh
+          - Asia/Pontianak
+          - Asia/Pyongyang
+          - Asia/Qatar
+          - Asia/Qostanay
+          - Asia/Qyzylorda
+          - Asia/Rangoon
+          - Asia/Riyadh
+          - Asia/Saigon
+          - Asia/Sakhalin
+          - Asia/Samarkand
+          - Asia/Seoul
+          - Asia/Shanghai
+          - Asia/Singapore
+          - Asia/Srednekolymsk
+          - Asia/Taipei
+          - Asia/Tashkent
+          - Asia/Tbilisi
+          - Asia/Tehran
+          - Asia/Tel_Aviv
+          - Asia/Thimbu
+          - Asia/Thimphu
+          - Asia/Tokyo
+          - Asia/Tomsk
+          - Asia/Ujung_Pandang
+          - Asia/Ulaanbaatar
+          - Asia/Ulan_Bator
+          - Asia/Urumqi
+          - Asia/Ust-Nera
+          - Asia/Vientiane
+          - Asia/Vladivostok
+          - Asia/Yakutsk
+          - Asia/Yangon
+          - Asia/Yekaterinburg
+          - Asia/Yerevan
+    Trigger:
+      type: object
+      properties:
+        Debounce:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 20971
+          x-unit: microseconds
+          description: Trigger debouncing.
+        Delay:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 16777215
+          x-unit: microseconds
+          description: Trigger delay in microseconds.
+        Edge:
+          type: string
+          enum:
+          - Rising
+          - Falling
+          - Both
+          description: Trigger edge type.
+        NoTriggerThreshold:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 2147483647
+          x-unit: milliseconds
+          description: 'Maximum time between two received images before system state
+            warning.
+
+
+            **NOTICE!** 0 deactivates the warning.
+
+            '
+        Prescaler:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 64
+          description: Prescaler settings.
+        Timeout:
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 16777215
+          x-unit: microseconds
+          description: Trigger timeout in microseconds.
+        TriggerType:
+          type: string
+          enum:
+          - Freerun
+          - Software
+          - Hardware
+          description: Trigger type.
+    Update:
+      type: object
+      properties:
+        Progress:
+          description: Progress of the installation of the system update.
+          maximum: 100
+          minimum: 0
+          type: integer
+          format: int64
+          x-unit: per cent
+        Status:
+          description: Status regarding the system update.
+          type: string
+    User:
+      type: object
+      properties:
+        Groups:
+          description: List of group memberships.
+          type: array
+          items:
+            type: string
+    Users:
+      type: object
+      properties:
+        Users:
+          description: List of user names.
+          type: array
+          items:
+            type: string
+    VApp:
+      type: object
+      properties:
+        Activated:
+          description: Activation status of the vision app.
+          type: boolean
+        Brief:
+          description: Short description of the vision app.
+          type: string
+        Description:
+          description: Long description of the vision app.
+          type: string
+        DiskUsage:
+          description: Disk usage of the vision app in kByte.
+          type: integer
+          format: int64
+          x-unit: kilobytes
+        Manufacturer:
+          description: Manufacturer of the vision app.
+          type: string
+        ModuleDependencies:
+          description: External modules used by the vision app.
+          type: array
+          items:
+            type: string
+        Name:
+          description: Name of the vision app.
+          type: string
+        Status:
+          description: Runtime status of the vision app.
+          type: string
+          enum:
+          - NotRunning
+          - Starting
+          - Running
+          - Crashed
+          - FailedToStart
+          - TimedOut
+          - ReadError
+          - WriteError
+          - UnknownError
+          - Incompatible
+          - DeepOceanCoreInUse
+          - Debugging
+        Title:
+          description: Title of the vision app.
+          type: string
+        Type:
+          description: Vision app type.
+          type: string
+          enum:
+          - VApp
+          - Plugin
+          - System
+        Version:
+          description: Version of the vision app.
+          type: string
+        Website:
+          description: URL of the vision app website. The entry is empty if the vision
+            app does not have a website.
+          type: string
+    VAppAction:
+      type: object
+      properties:
+        Active:
+          description: The value is "true" if the action is executed.
+          type: boolean
+        Brief:
+          description: Brief description of the action.
+          type: string
+        Description:
+          description: Long description of the action.
+          type: string
+        Enabled:
+          description: The value is "true" if the execution of the action is allowed.
+          type: boolean
+        Title:
+          description: Title of the action.
+          type: string
+        ZIndex:
+          description: Z-index of the action.
+          type: integer
+          format: int64
+    VAppConfigurables:
+      type: object
+    VAppFile:
+      type: object
+      properties:
+        Brief:
+          description: Brief description of the file.
+          type: string
+        Deletable:
+          description: The value is "true" if file is deletable.
+          type: boolean
+        Description:
+          description: Description of the file.
+          type: string
+        Filter:
+          description: Filter of the file.
+          type: array
+          items:
+            type: string
+        MaxSize:
+          description: Maximum file size in bytes.
+          type: integer
+          format: int64
+        MimeType:
+          description: Mime type of the file.
+          type: string
+        Readable:
+          description: The value is "true" if file is readable.
+          type: boolean
+        Title:
+          description: Title of the file.
+          type: string
+        Writable:
+          description: The value is "true" if file is writable.
+          type: boolean
+        ZIndex:
+          description: Z-index of the file.
+          type: integer
+          format: int64
+    VAppImage:
+      type: object
+      properties:
+        Brief:
+          description: Brief description of the image.
+          type: string
+        Description:
+          description: Long description of the image.
+          type: string
+        Title:
+          description: Title of the image.
+          type: string
+        ZIndex:
+          description: Z-index of the result image.
+          type: integer
+          format: int64
+    VAppResultSink:
+      type: object
+      properties:
+        Brief:
+          description: Brief description of the result sink.
+          type: string
+        Connected:
+          description: Connection state to source.
+          type: boolean
+        Description:
+          description: Long description of the result sink.
+          type: string
+        Source:
+          description: Specific result source.
+          type: string
+        Title:
+          description: Title of the result sink.
+          type: string
+        Type:
+          description: Type of the result sink.
+          type: string
+        VApp:
+          description: Vision app  of the result sink.
+          type: string
+    VAppResultSinkSetter:
+      type: object
+      properties:
+        Source:
+          description: The specific result source.
+          type: string
+        VApp:
+          description: The result source's vision app.
+          type: string
+    VAppResultsource:
+      type: object
+    VAppRoi:
+      type: object
+      properties:
+        Angle:
+          description: Rotation angle of the ROI.
+          maximum: 180
+          minimum: -180
+          type: integer
+          format: int64
+          x-unit: degrees
+        Brief:
+          description: Brief description of the ROI.
+          type: string
+        CenterX:
+          description: X-coordinate of the center point of the ROI.
+          type: integer
+          format: int64
+          x-unit: pixel
+        CenterY:
+          description: Y-coordinate of the center point of the ROI.
+          type: integer
+          format: int64
+          x-unit: pixel
+        Description:
+          description: Long description of the ROI.
+          type: string
+        Height:
+          description: Height of the ROI.
+          type: integer
+          format: int64
+          x-unit: pixel
+        Managed:
+          description: This is "true" if the ROI is managed by the RoiManager, "false"
+            otherwise.
+          type: boolean
+        OffsetX:
+          description: X-coordinate of the upper left corner of the ROI.
+          type: integer
+          format: int64
+          x-unit: pixel
+        OffsetY:
+          description: Y-coordinate of the upper left corner of the ROI.
+          type: integer
+          format: int64
+          x-unit: pixel
+        RoiName:
+          description: Public name used as identifier. This **must be unique** and
+            match [a-z]+[_a-z0-9-]*.
+          type: string
+        Title:
+          description: Title of the ROI.
+          type: string
+        Width:
+          description: Width of the ROI.
+          type: integer
+          format: int64
+          x-unit: pixel
+    VApps:
+      type: object
+      properties:
+        APIVersion:
+          description: Installed API versions.
+          type: array
+          items:
+            type: string
+        Installed:
+          description: List of installed vision apps.
+          type: array
+          items:
+            type: string
+        MaxConcurrent:
+          description: Maximum number of parallel vision apps.
+          type: integer
+          format: int64
+        Queued:
+          description: Queued vision apps, i.e. uploaded vision apps to be installed.
+          type: array
+          items:
+            type: string
+  responses:
+    DefaultOptions:
+      description: Default options response.
+      content:
+        application/json:
+          schema:
+            type: object
+    NullResponse:
+      description: Null response
+    UnexpectedError:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+      x-possible-users:
+      - admin
+      - user
+      - service
